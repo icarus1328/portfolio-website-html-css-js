@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Art Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #282a36;
+      --accent: #ff79c6;
+      --light: #fafafa;
+      --muted: #d2d3db;
+      --shadow: 0 8px 32px 0 rgba(60,40,80,0.13);
+      --backbtn-gradient: linear-gradient(90deg, #ff79c6 0%, #8be9fd 100%);
+      --backbtn-shadow: 0 2px 12px 0 rgba(160,54,166,0.16);
+    }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #ffe0f7 0%, #c6eaff 100%);
+      font-family: 'Roboto', Arial, sans-serif;
+      color: var(--primary);
+    }
+    .back-btn {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      padding: 0.7rem 1.4rem 0.7rem 1.1rem;
+      background: var(--backbtn-gradient);
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 30px;
+      box-shadow: var(--backbtn-shadow);
+      outline: none;
+      cursor: pointer;
+      gap: 0.8em;
+      transition: transform 0.13s, box-shadow 0.16s, background 0.19s;
+      text-shadow: 0 1px 7px rgba(0,0,0,0.10);
+      min-width: 96px;
+      user-select: none;
+    }
+    .back-btn:focus,
+    .back-btn:hover {
+      background: linear-gradient(90deg, #c37cdf 0%, #39517a 100%);
+      box-shadow: 0 6px 22px 0 rgba(52,68,160,0.20);
+      transform: translateY(-2px) scale(1.02);
+      color: #fff;
+    }
+    .back-btn:active {
+      transform: scale(0.98);
+      background: linear-gradient(90deg, #ef6ca5 0%, #63d2fc 100%);
+    }
+    .back-btn-icon {
+      width: 1.25em;
+      height: 1.25em;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 0.2em;
+    }
+    header {
+      text-align: center;
+      padding: 4rem 1rem 2rem 1rem;
+      background: rgba(255, 255, 255, 0.90);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .artist-name {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 2.8rem;
+      color: var(--primary);
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--accent);
+      font-size: 1.35rem;
+      margin-bottom: 0.2rem;
+    }
+    main {
+      max-width: 1200px;
+      margin: 2rem auto 0 auto;
+      padding: 0 1.5rem 2rem 1.5rem;
+    }
+    .gallery-title {
+      font-size: 2rem;
+      text-align: center;
+      margin: 2rem 0 0.75rem 0;
+      font-family: 'Montserrat', sans-serif;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+    .gallery {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      margin-top: 1.5rem;
+    }
+    .art-card {
+      background: rgba(255,255,255,0.96);
+      border-radius: 1.1rem;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.17s cubic-bezier(0.4,0.2,0.2,1), box-shadow 0.17s;
+      cursor: pointer;
+      position: relative;
+    }
+    .art-card:hover {
+      transform: translateY(-5px) scale(1.025);
+      box-shadow: 0 12px 28px 0 rgba(160,54,166,0.18);
+      z-index: 1;
+    }
+    .art-card img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      aspect-ratio: 1.1/1;
+      border-top-left-radius: 1.1rem;
+      border-top-right-radius: 1.1rem;
+      transition: opacity 0.15s;
+      background: var(--muted);
+      display: block;
+    }
+    .art-info {
+      padding: 1.15rem;
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .art-title {
+      font-family: 'Montserrat',sans-serif;
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 1.1em;
+      margin-bottom: 0.25em;
+    }
+    .art-description {
+      color: #585262;
+      font-size: 0.98em;
+      flex: 1;
+    }
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 90;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(18,8,24,0.83);
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.36s;
+    }
+    .modal.open {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+      from { opacity: 0; }
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 1.15rem;
+      box-shadow: var(--shadow);
+      padding: 0;
+      max-width: 90vw;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      animation: modalPop 0.38s cubic-bezier(0.36,0.78,0.42,1.23);
+    }
+    @keyframes modalPop {
+      0% { transform: scale(0.8); }
+      100% { transform: scale(1.0);}
+    }
+    .modal-img {
+      width: auto;
+      height: 50vh;
+      max-width: 75vw;
+      object-fit: contain;
+      margin: 2.5rem 2.5rem 0.3rem 2.5rem;
+      border-radius: 0.7rem;
+      background: var(--muted);
+      box-shadow: 0 6px 32px 0 rgba(60,40,80,0.13);
+    }
+    .modal-caption {
+      padding: 1.15rem 2.25rem 2.2rem 2.25rem;
+      text-align: center;
+    }
+    .modal-title {
+      font-family: 'Montserrat',sans-serif;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1.4em;
+      margin-bottom: 0.17em;
+    }
+    .modal-desc {
+      color: #585262;
+      font-size: 1em;
+      max-width: 40ch;
+      margin: 0 auto;
+    }
+    .close-btn {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.9rem;
+      font-size: 2.2rem;
+      color: var(--accent);
+      opacity: 0.87;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      z-index: 2;
+      transition: color 0.13s;
+    }
+    .close-btn:hover { color: #e52a88; }
+    /* About/Contact Styles */
+    .about-section,
+    .contact-section {
+      background: rgba(255,255,255,0.95);
+      border-radius: 1.1rem;
+      box-shadow: var(--shadow);
+      margin: 2.6rem 0 0 0;
+      padding: 2.2rem 2.2rem 2.2rem 2.2rem;
+      max-width: 860px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .about-title,
+    .contact-title {
+      font-family: 'Montserrat',sans-serif;
+      font-size: 1.35rem;
+      color: var(--primary);
+      margin-bottom: 0.6em;
+      letter-spacing: 0.5px;
+    }
+    .about-text,
+    .contact-links {
+      color: #47425b;
+      font-size: 1.02em;
+      line-height: 1.58;
+    }
+    .contact-links a {
+      text-decoration: none;
+      color: var(--accent);
+      font-weight: 600;
+      margin-right: 1.4em;
+      transition: color 0.14s;
+    }
+    .contact-links a:hover {
+      color: #593696;
+      text-decoration: underline;
+    }
+    @media (max-width: 700px) {
+      .back-btn {
+        top: 1.15rem;
+        left: 1.1rem;
+        padding: 0.65rem 1.1rem 0.65rem 0.9rem;
+        font-size: 1rem;
+      }
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+      .modal-content {
+        margin-left: 6vw;
+        margin-right: 6vw;
+      }
+      .modal-img {
+        max-width: 94vw;
+      }
+      .about-section, .contact-section {
+        padding: 1.1rem 1rem;
+      }
+    }
+    ::-webkit-scrollbar { width: 8px; background: #f8f1f9; }
+    ::-webkit-scrollbar-thumb { background: #eac6e5; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <button class="back-btn" id="backBtn" aria-label="Go back to previous page">
+    <span class="back-btn-icon">
+      <!-- SVG left arrow icon, modern look -->
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12.5 16L7.5 10L12.5 4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    Back
+  </button>
+  
+  <main>
+    <div class="gallery-title">Artworks Gallery</div>
+    <div class="gallery" id="artGallery">
+      <!-- Artwork cards: replace src/href/text with your real works -->
+
+      <div class="art-card" tabindex="0" data-title="Kitagawa Marin"  data-img="./assets/kitagawa marin digital art1.jpg">
+        <img src="./assets/kitagawa marin digital art1.jpg" alt="Mystic Forest artwork">
+        <div class="art-info">
+          <div class="art-title">Kitagawa Marin</div>
+          <div class="art-description">Doll</div>
+        </div>
+      </div>
+
+      <div class="art-card" tabindex="0" data-title="Satoru Gojo" data-img="./assets/satoru gojo.jpg">
+        <img src="./assets/satoru gojo.jpg" alt="Cosmic Dreams artwork">
+        <div class="art-info">
+          <div class="art-title">Satoru Gojo</div>
+          <div class="art-description">Jujutsu Kaise</div>
+        </div>
+      </div>
+
+      <div class="art-card" tabindex="0" data-title="Touka Kirishima" data-img="./assets/kirishima touka.jpg">
+        <img src="./assets/kirishima touka.jpg" alt="Serene Bloom artwork">
+        <div class="art-info">
+          <div class="art-title">Kirishima Touka</div>
+          <div class="art-description">Tokyo Ghoul</div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Modal for full artwork view -->
+  <div class="modal" id="artModal">
+    <div class="modal-content">
+      <button class="close-btn" id="modalClose" aria-label="Close image view">&times;</button>
+      <img class="modal-img" id="modalImg" src="" alt="">
+      <div class="modal-caption">
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-desc" id="modalDesc"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Modal gallery logic
+    const gallery = document.getElementById('artGallery');
+    const modal = document.getElementById('artModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalClose = document.getElementById('modalClose');
+
+    function openModal(img, title, desc) {
+      modalImg.src = img;
+      modalImg.alt = title;
+      modalTitle.textContent = title;
+      modalDesc.textContent = desc;
+      modal.classList.add('open');
+      document.body.style.overflow = "hidden"; // Prevent background scroll
+    }
+    function closeModal() {
+      modal.classList.remove('open');
+      modalImg.src = '';
+      document.body.style.overflow = "";
+    }
+
+    gallery.addEventListener('click', function(e){
+      let card = e.target.closest('.art-card');
+      if(card){
+        openModal(
+          card.dataset.img,
+          card.dataset.title,
+          card.dataset.description
+        );
+      }
+    });
+    gallery.addEventListener('keypress', function(e){
+      if (e.key === "Enter" || e.key === " ") {
+        let card = e.target.closest('.art-card');
+        if(card){
+          openModal(
+            card.dataset.img,
+            card.dataset.title,
+            card.dataset.description
+          );
+        }
+      }
+    });
+    modalClose.onclick = closeModal;
+    modal.onclick = function(e){
+      if(e.target === modal) closeModal();
+    };
+    window.addEventListener('keydown', function(e){
+      if(e.key === "Escape" && modal.classList.contains('open')) closeModal();
+    });
+
+    // Back button logic
+    document.getElementById('backBtn').addEventListener('click', function() {
+      // TODO: Change 'previouspage.html' to your actual previous page file/name
+      window.location.href = './index.html';
+    });
+    // Keyboard accessibility for back button
+    document.getElementById('backBtn').addEventListener('keypress', function(e){
+      if(e.key === "Enter" || e.key === " ") {
+        window.location.href = 'previouspage.html';
+      }
+    });
+  </script>
+</body>
+</html>
+
